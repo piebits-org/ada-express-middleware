@@ -2,7 +2,8 @@
   "name": "@piebits/ada-express-middleware",
   "version": "0.1.0",
   "description": "Express Middleware for ADA that validates token against public key and also returns user from ADA",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "lint": "eslint --ext .ts",
     "build": "tsc"
@@ -29,6 +30,8 @@
   "homepage": "https://github.com/piebits-org/ada-express-middleware#readme",
   "devDependencies": {
     "@types/express": "^4.17.12",
+    "@types/express-unless": "^0.5.1",
+    "@types/jsonwebtoken": "^8.5.1",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
     "@typescript-eslint/parser": "^4.26.1",
     "eslint": "^7.28.0",
