@@ -5,6 +5,16 @@ import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
 import { ADA_PARAMS } from './types';
 
+declare global {
+  namespace Express {
+    interface Request {
+      ada_user: {
+        [key: string]: any
+      }
+    }
+  }
+}
+
 const supported_version = '020';
 
 const public_key = readFileSync('jwt_ada.key.pub');
