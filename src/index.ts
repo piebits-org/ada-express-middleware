@@ -15,8 +15,11 @@ export default function ada_middleware({ app_id, fetchuser = false, scope }: ADA
       const token = req.headers.authorization;
       if (token) {
         if (fetchuser) {
+          const url = scope
+            ? `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`
+            : `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self`;
           const { data } = await axios.get(
-            `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`,
+            url,
             {
               headers: {
                 Authorization: token,
