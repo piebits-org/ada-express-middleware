@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
 import { ADA_PARAMS } from './types';
 
-const latest_version = '010';
+const supported_version = '020';
 
 const public_key = readFileSync('jwt_ada.key.pub');
 
@@ -16,7 +16,7 @@ export default function ada_middleware({ app_id, fetchuser = false, scope }: ADA
       if (token) {
         if (fetchuser) {
           const { data } = await axios.get(
-            `https://ada.cloud.piebits.org/${latest_version}/userops/fetch/self?scope=${scope}`,
+            `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`,
             {
               headers: {
                 Authorization: token,
