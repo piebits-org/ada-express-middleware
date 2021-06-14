@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import unless from 'express-unless';
-import { readFileSync } from 'fs';
 import { verify } from 'jsonwebtoken';
+import public_key from './pub_key';
 import { ADA_PARAMS } from './types';
 
 declare global {
@@ -16,8 +16,6 @@ declare global {
 }
 
 const supported_version = '020';
-
-const public_key = readFileSync('jwt_ada.key.pub');
 
 export default function ada_middleware({ app_id, fetchuser = false, scope }: ADA_PARAMS) {
   const middleware = async (req: Request, res: Response, next: NextFunction) => {
