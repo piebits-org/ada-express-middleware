@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const supported_version = '020';
+const supported_version = '030';
 
 export default function ada_middleware({ app_id, fetchuser = false, scope }: ADA_PARAMS) {
   const middleware = async (req: Request, res: Response, next: NextFunction) => {
