@@ -17,24 +17,33 @@ declare global {
 
 const supported_version = '030';
 
+export async function request_endpoint(scope: string | undefined, token: string, app_id: string) {
+  try {
+    const url = scope
+      ? `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`
+      : `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self`;
+    const { data } = await axios.get(
+      url,
+      {
+        headers: {
+          Authorization: token,
+          'x-ada-app-id': app_id,
+        },
+      },
+    );
+    return Promise.resolve(data);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
 export function ada_middleware({ app_id, fetchuser = false, scope }: ADA_PARAMS) {
   const middleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
       if (token) {
         if (fetchuser) {
-          const url = scope
-            ? `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`
-            : `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self`;
-          const { data } = await axios.get(
-            url,
-            {
-              headers: {
-                Authorization: token,
-                'x-ada-app-id': app_id,
-              },
-            },
-          );
+          const data = request_endpoint(scope, token, app_id);
           req.ada_user = data;
           next();
         } else {
