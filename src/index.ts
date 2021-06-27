@@ -43,7 +43,7 @@ export function ada_middleware({ app_id, fetchuser = false, scope }: ADA_PARAMS)
       const token = req.headers.authorization;
       if (token) {
         if (fetchuser) {
-          const data = request_endpoint(scope, token, app_id);
+          const data = await request_endpoint(scope, token, app_id);
           req.ada_user = data;
           next();
         } else {
