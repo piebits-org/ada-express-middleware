@@ -1,6 +1,6 @@
 {
   "name": "@piebits/ada-express-middleware",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Express Middleware for ADA that validates token against public key and also returns user from ADA",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
