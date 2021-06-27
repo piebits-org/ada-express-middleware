@@ -1,9 +1,8 @@
 name: Publish
 
 on:
-  push:
-    branches:
-      - npm-pub
+  release:
+    types: [published]
 
 jobs:
   build:
