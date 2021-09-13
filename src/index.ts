@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const supported_version = '030';
+const supported_version = '050';
 
 export const request_endpoint = async (scope: string | undefined, token: string, app_id: string)
 : Promise<{ user: any }> => {
@@ -51,7 +51,6 @@ export const ada_middleware = ({ app_id, fetchuser = false, scope }: ADA_PARAMS)
           const token_without_bearer = token.split('Bearer ')[1];
           const data = verify(token_without_bearer, public_key, {
             issuer: 'https://ada.cloud.piebits.org',
-            audience: req.ip,
             algorithms: ['RS256'],
           });
           req.ada_user = data as object;
