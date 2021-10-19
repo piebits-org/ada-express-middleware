@@ -14,11 +14,15 @@ declare global {
   }
 }
 
-export interface ADA_PARAMS {
+export type ADA_PARAMS = {
+  fetchuser: true;
+  token: string;
   app_id: string;
-  fetchuser?: boolean;
   scope?: string;
-}
+} | {
+  fetchuser: false;
+  token: string;
+};
 
 const supported_version = '050';
 
@@ -66,7 +70,7 @@ export const validateToken = (token: string) => {
   }
 };
 
-export const validate = async (props: ADA_PARAMS & { token: string }) => {
+export const validate = async (props: ADA_PARAMS) => {
   if (props.token) {
     if (props.fetchuser) {
       const data = await validateFromEndpoint(props.scope, props.token, props.app_id);
@@ -81,7 +85,7 @@ export const validate = async (props: ADA_PARAMS & { token: string }) => {
   throw new Error('Auth Token is required');
 };
 
-export const middleware = ({ app_id, fetchuser = false, scope }: ADA_PARAMS): any => {
+export const middleware = (props: ADA_PARAMS): any => {
   const func = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
@@ -96,12 +100,7 @@ export const middleware = ({ app_id, fetchuser = false, scope }: ADA_PARAMS): an
 
         return;
       }
-      const data = await validate({
-        app_id,
-        fetchuser,
-        scope,
-        token,
-      });
+      const data = await validate(props);
 
       req.ada_user = data;
 
