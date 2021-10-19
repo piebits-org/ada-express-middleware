@@ -12,25 +12,31 @@
         "ecmaVersion": 12,
         "sourceType": "module",
         "project": [
-            "./tsconfig.json",
-            "./src/index.d.ts"
+            "./tsconfig.json"
         ]
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "eslint-plugin-import"
     ],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "error",
             {
-                "selector": ["variable", "function"],
-                "format": ["snake_case"]
+                "selector": ["interface"],
+                "format": ["UPPER_CASE", "PascalCase"]
+            },
+            {
+                "selector": ["variable"],
+                "format": ["snake_case", "camelCase"]
+            },
+            {
+                "selector": ["function"],
+                "format": ["camelCase"]
             }
         ],
         "import/prefer-default-export": ["off"],
-        "no-underscore-dangle": "off",
-        "@typescript-eslint/return-await": "off",
-        "import/no-extraneous-dependencies": "off"
+        "no-underscore-dangle": "off"
     },
     "ignorePatterns": [
         "lib/**/*",
