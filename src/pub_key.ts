@@ -1,4 +1,4 @@
-const public_key = `-----BEGIN RSA PUBLIC KEY-----
+export const public_key = `-----BEGIN RSA PUBLIC KEY-----
 MIICCgKCAgEA5Lf2o0SobNFTYj3xDgVj/koAaRHTHAQOD/vzddZ7ZF4IV6Tccyfv
 54MR/wWYOVHmEdwz55l5u1CAkz7ZUzKsxjZvv+iJT74gWWbARsKMnm0+B+oTCWYo
 dHgGzFTGvipPyt4Fw4Mswl3ae/F2WD2Ub7hz020KGa56l/2sjGfT/HkX2yBdZMMK
@@ -11,5 +11,3 @@ MffrFUuTz50bt2vGynWsbe+JIFjUfSzONtd9wGhNhVt3uPz8gL6fPP04cWGSBdve
 EY0t8pPbE4EwuTGJjBGBwciwcrPm10HQPXisAV2xXG6vkZkO+Sxk9dekAqQL/fUi
 7ICE6wsJjWV6z7EcP9It59emjwD91gq8v36GOYGa1oEHfTzhd81znt0CAwEAAQ==
 -----END RSA PUBLIC KEY-----`;
-
-export default public_key;
