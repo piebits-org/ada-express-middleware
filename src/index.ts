@@ -2,8 +2,7 @@ import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import unless from 'express-unless';
 import { verify } from 'jsonwebtoken';
-import public_key from './pub_key';
-import { ADA_PARAMS } from './types';
+import { public_key } from './pub_key';
 
 declare global {
   namespace Express {
@@ -15,15 +14,25 @@ declare global {
   }
 }
 
+export interface ADA_PARAMS {
+  app_id: string;
+  fetchuser?: boolean;
+  scope?: string;
+}
+
 const supported_version = '050';
 
-export const request_endpoint = async (scope: string | undefined, token: string, app_id: string)
-: Promise<{ user: any }> => {
+export const validateFromEndpoint = async (
+  scope: string | undefined,
+  token: string,
+  app_id: string,
+) => {
   try {
     const url = scope
       ? `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self?scope=${scope}`
       : `https://ada.cloud.piebits.org/${supported_version}/userops/fetch/self`;
-    const { data } = await axios.get(
+
+    const { data } = await axios.get<any>(
       url,
       {
         headers: {
@@ -32,39 +41,82 @@ export const request_endpoint = async (scope: string | undefined, token: string,
         },
       },
     );
-    return Promise.resolve(data);
-  } catch (e) {
-    return Promise.reject(e);
+
+    return data.user;
+  } catch {
+    throw new Error('Auth Token Invalid');
   }
 };
 
-export const ada_middleware = ({ app_id, fetchuser = false, scope }: ADA_PARAMS): any => {
-  const middleware = async (req: Request, res: Response, next: NextFunction) => {
+export const validateToken = (token: string) => {
+  try {
+    if (token && token.startsWith('Bearer ')) {
+      const sanitized_token = token.split('Bearer ')[1];
+
+      const decoded = verify(sanitized_token, public_key, {
+        issuer: 'https://ada.cloud.piebits.org',
+        algorithms: ['RS256'],
+      });
+
+      return decoded as any;
+    }
+    throw new Error('Auth Token should start with bearer');
+  } catch {
+    throw new Error('Auth Token Invalid');
+  }
+};
+
+export const validate = async (props: ADA_PARAMS & { token: string }) => {
+  if (props.token) {
+    if (props.fetchuser) {
+      const data = await validateFromEndpoint(props.scope, props.token, props.app_id);
+
+      return data;
+    }
+    const data = validateToken(props.token);
+
+    return data;
+  }
+
+  throw new Error('Auth Token is required');
+};
+
+export const middleware = ({ app_id, fetchuser = false, scope }: ADA_PARAMS): any => {
+  const func = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
-      if (token) {
-        if (fetchuser) {
-          const data = await request_endpoint(scope, token, app_id);
-          req.ada_user = data.user;
-          next();
-        } else {
-          const token_without_bearer = token.split('Bearer ')[1];
-          const data = verify(token_without_bearer, public_key, {
-            issuer: 'https://ada.cloud.piebits.org',
-            algorithms: ['RS256'],
+
+      if (!token) {
+        res
+          .status(401)
+          .json({
+            type: 'Auth Error',
+            message: 'Auth Token Missing',
           });
-          req.ada_user = data as object;
-          next();
-        }
-      } else {
-        res.status(400).send('Auth Error: Token Missing');
+
+        return;
       }
-    } catch {
-      res.status(401).send('Auth Error: Invalid Token');
+      const data = await validate({
+        app_id,
+        fetchuser,
+        scope,
+        token,
+      });
+
+      req.ada_user = data;
+
+      next();
+    } catch (e: any) {
+      res
+        .status(401)
+        .json({
+          type: 'Auth Error',
+          message: e.message,
+        });
     }
   };
 
-  middleware.unless = unless;
+  func.unless = unless;
 
-  return middleware;
+  return func;
 };
