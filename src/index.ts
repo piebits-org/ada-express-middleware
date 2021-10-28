@@ -24,6 +24,14 @@ export type ADA_PARAMS = {
   token: string;
 };
 
+export type ADA_PARAMS_WITHOUT_TOKEN = {
+  fetchuser: true;
+  app_id: string;
+  scope?: string;
+} | {
+  fetchuser: false;
+};
+
 const supported_version = '050';
 
 export const validateFromEndpoint = async (
@@ -85,7 +93,7 @@ export const validate = async (props: ADA_PARAMS) => {
   throw new Error('Auth Token is required');
 };
 
-export const middleware = (props: ADA_PARAMS): any => {
+export const middleware = (props: ADA_PARAMS_WITHOUT_TOKEN): any => {
   const func = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
@@ -100,7 +108,10 @@ export const middleware = (props: ADA_PARAMS): any => {
 
         return;
       }
-      const data = await validate(props);
+      const data = await validate({
+        ...props,
+        token,
+      });
 
       req.ada_user = data;
 
